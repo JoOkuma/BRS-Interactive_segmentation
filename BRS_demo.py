@@ -5,9 +5,10 @@ from skimage import transform, filters, measure, data
 import numpy as np
 from collections import OrderedDict
 import caffe
-from InputCorrection import *
-import Tkinter as tk
-import tkFileDialog
+from InputCorrection.InputCorrection import *
+from InputCorrection import LossFunctions
+import tkinter.filedialog as tkdialog
+import tkinter as tk
 
 
 net_size = [480, 480]
@@ -23,43 +24,20 @@ net_model = './model/deploy.prototxt'
 im_path = './data/24077_in.png'
 gt_path = './data/24077_gt.png'
 
-caffe.set_mode_gpu()  # for cpu mode do 'caffe.set_mode_cpu()'
-caffe.set_device(0)
+# caffe.set_mode_gpu()  # for cpu mode do 'caffe.set_mode_cpu()'
+# caffe.set_device(0)
 # load network
-net = caffe.Net(net_model, net_weight, caffe.TEST)
+caffe.set_mode_cpu()
+net = caffe.Net(net_model, caffe.TEST, weights=net_weight)
 
 click_id = -1
 yx_click = []
 is_pos = 1
 
-
-
-
-
-
-
-
-
-
-
-
-
 class constraint(object):
     def __init__(self, loss_functions, parameter_lists):
         self.loss_functions = loss_functions
         self.parameter_lists = parameter_lists
-
-
-
-
-
-
-
-
-
-
-
-
 
 def create_test_batch(img_size, net_size):
     y_list = []
@@ -117,9 +95,7 @@ def load_image():
     print("%d\n" % (file_ind + 1))
     click_id = -1
 
-
-
-    File = tkFileDialog.askopenfilename(parent=root, initialdir="./data", title='Select an image')
+    File = tkdialog.askopenfilename(parent=root, initialdir="./data", title='Select an image')
     img_original = Image.open(File)
     # img_original = Image.open(impath_list[file_ind])
     photo_left = ImageTk.PhotoImage(img_original)
@@ -135,10 +111,6 @@ def load_image():
     temp_map = np.zeros([img_size[1], img_size[0]])
     temp_img = Image.fromarray(np.uint8(temp_map * 255))
     post_segmap = ImageTk.PhotoImage(temp_img)
-
-
-
-
 
     # in_img = cv2.imread(impath_list[file_ind])
     in_img = cv2.imread(File)
@@ -275,10 +247,6 @@ def perform_segmentation():
         target_mat[0, 0, yx_click[-1][0], yx_click[-1][1]] = 0
     valid_mat[0, 0, yx_click[-1][0], yx_click[-1][1]] = 1
 
-
-
-
-
     # Entire image
     net_inimg = np.zeros([1, 3, whole_netSize[0], whole_netSize[1]], np.float32)
     net_inimg[0] = tran_wholeImg
@@ -295,13 +263,6 @@ def perform_segmentation():
     whole_segmap = net.blobs['sig_pred'].data.copy()
     whole_segmap = whole_segmap[0, 0]
     whole_segmap = cv2.resize(whole_segmap, (cv_imgSize[1], cv_imgSize[0]), interpolation=cv2.INTER_CUBIC)
-
-
-
-
-
-
-
 
     net.blobs['data'].reshape(1, 3, net_size[0], net_size[1])
     net.blobs['iact'].reshape(1, 2, net_size[0], net_size[1])
@@ -339,7 +300,6 @@ def perform_segmentation():
     count_map += np.sum(win_countMap, axis=0)
 
     seg_map = np.divide(seg_map, count_map)
-
 
     if is_pos:
         is_brs = seg_map[yx_click[-1][0], yx_click[-1][1]]<=pred_thold
@@ -456,7 +416,7 @@ click_id = -1
 
 print("%d\n" % (file_ind + 1))
 
-File = tkFileDialog.askopenfilename(parent=root, initialdir="./data", title='Select an image')
+File = tkdialog.askopenfilename(parent=root, initialdir="./data", title='Select an image')
 img_original = Image.open(File)
 photo_left = ImageTk.PhotoImage(img_original)
 img_size = photo_left._PhotoImage__size

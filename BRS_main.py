@@ -1,6 +1,7 @@
 import numpy as np
 from collections import OrderedDict
-from InputCorrection import *
+from InputCorrection.InputCorrection import *
+from InputCorrection import LossFunctions
 from generate_click import *
 import caffe
 import cv2
@@ -49,10 +50,11 @@ def main(im_path, gt_path):
     net_weight = './model/BRS_DenseNet.caffemodel'
     net_model = './model/deploy.prototxt'
 
-    caffe.set_mode_gpu()  # for cpu mode do 'caffe.set_mode_cpu()'
-    caffe.set_device(0)
+    # caffe.set_mode_gpu()  # for cpu mode do 'caffe.set_mode_cpu()'
+    # caffe.set_device(0)
     # load network
-    net = caffe.Net(net_model, net_weight, caffe.TEST)
+    caffe.set_mode_cpu()
+    net = caffe.Net(net_model, caffe.TEST, weights=net_weight)
 
     print('Input image path:', im_path)
     print('Ground-truth path:', gt_path)

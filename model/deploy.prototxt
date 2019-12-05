@@ -29,7 +29,7 @@ layer {
   top: "concat_input"
   type: "Concat"
   concat_param {
-    concat_dim: 1
+    axis: 1
   }
 }
 
@@ -89,8 +89,6 @@ layer {
     pool: MAX
     kernel_size: 3
     stride: 2
-    pad: 1
-    ceil_mode: false
   }
 }
 layer {
@@ -5729,7 +5727,7 @@ layer {
   bottom: "conv_SE_1/16"
   top: "concat_1/16d"
   concat_param {
-    concat_dim: 1
+    axis: 1
   }
 }
 layer {
@@ -5979,7 +5977,7 @@ layer {
   bottom: "conv_SE_1/8"
   top: "concat_1/8d"
   concat_param {
-    concat_dim: 1
+    axis: 1
   }
 }
 layer {
@@ -6229,7 +6227,7 @@ layer {
   bottom: "conv_SE_1/4"
   top: "concat_1/4d"
   concat_param {
-    concat_dim: 1
+    axis: 1
   }
 }
 layer {
@@ -6404,7 +6402,7 @@ layer {
   top: "concat_step_1"
   type: "Concat"
   concat_param {
-    concat_dim: 1
+    axis: 1
   }
 }
 
@@ -6716,7 +6714,7 @@ layer {
   top: "concat_step_2"
   type: "Concat"
   concat_param {
-    concat_dim: 1
+    axis: 1
   }
 }
 

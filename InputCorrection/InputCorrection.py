@@ -5,7 +5,7 @@ from scipy.optimize import fmin_l_bfgs_b
 
 def get_indices(net, constraints):
     indices = [ndx for ndx,layer in enumerate(net.blobs.keys()) if layer in constraints.keys()]
-    return net.blobs.keys(),indices[::-1]
+    return list(net.blobs.keys()), indices[::-1]
 
 def InputCorrection(reg_param, net, init_map, layer_name, constraints):
      #get indices for gradient
