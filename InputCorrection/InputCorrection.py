@@ -30,7 +30,6 @@ def InputCorrection(reg_param, net, init_map, layer_name, constraints):
         for index in indices:
             net.blobs[layers[index]].diff[...] = np.zeros_like(net.blobs[layers[index]].diff)
 
-
         constraints['sig_pred'].parameter_lists[0].update({'activations': net.blobs['sig_pred'].data.copy()})
         
         val, grad, f_max = constraints['sig_pred'].loss_functions[0](**constraints['sig_pred'].parameter_lists[0])
@@ -39,12 +38,12 @@ def InputCorrection(reg_param, net, init_map, layer_name, constraints):
             return [val, np.array(np.zeros(np.shape(iact_map)).ravel(), dtype=float)]
 
         f_val = val.copy()
-        f_val += reg_param*(np.sum(np.power(iact_map-init_map, 2.0)))
+        f_val += reg_param * np.sum(np.power(iact_map - init_map, 2.0))
 
         net.blobs['sig_pred'].diff[...] = grad.copy()
 
         f_grad = net.backward(start='sig_pred')[layer_name].copy()   # last layer
-        f_grad += 2*reg_param*(iact_map-init_map)
+        f_grad += 2 * reg_param * (iact_map - init_map)
         return [f_val, np.array(f_grad.ravel(), dtype=float)]
         
     result = fmin_l_bfgs_b(func=f, x0=init_map.copy(), maxiter=100, m=20, factr=0, pgtol=1e-9)
